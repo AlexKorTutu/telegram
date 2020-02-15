@@ -17,7 +17,7 @@ class DebtTable extends AbstractTable
         string $description = ''
     ) {
         //TODO захардкодим пока payment_id = $sessionId, но потом надо будет доделать.
-        $sql = 'INSERT INTO ' . self::DEBT_TABLE . ' (user_debtor, user_creditor, amount, `description`, payment_id) 
+        $sql = 'INSERT INTO ' . self::DEBT_TABLE . ' (user_debtor, user_creditor, amount, description, payment_id) 
         VALUES (:user_debtor, :user_creditor, :amount, :about, :payment_id)';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
