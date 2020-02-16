@@ -28,15 +28,16 @@ class DebtCommand extends UserCommand
         if (!$this->validateMessage($message)) {
             $reply = "Команда должна быть формата /debt @user сумма_без_копеек описание";
         } else {
-            $this->prepareData($message);
-
-            $sessionId = (new SessionTable())->getLastActiveSessionByChatId($chat_id);
-            $reply = "{$this->user}! Задолжал {$this->user2} {$this->sum} рублей, описание долга {$this->debtDescription}";
             try {
+                $this->prepareData($message);
+
+                $sessionId = (new SessionTable())->getLastActiveSessionByChatId($chat_id);
+                $reply = "{$this->user}! Задолжал {$this->user2} {$this->sum} рублей, описание долга {$this->debtDescription}";
+
                 (new DebtTable())->addDebt($this->user, $this->user2, $this->sum, $sessionId, $this->debtDescription);
             } catch (\Exception $e) {
-                $reply = 'Что-то пошло не так: ' . $e->getMessage();
-            }
+                    $reply = 'Что-то пошло не так: ' . $e->getMessage();
+                }
         }
 
         $data = [                                  // Set up the new message data
@@ -62,6 +63,9 @@ class DebtCommand extends UserCommand
                 $user2 = substr($text, $offset, $length);
             }
         }
+        if (is_null($user2)) {
+            throw new \Exception('Не найдены меншены юзера в строке');
+    }
 
         // тут костыль - добавляем @ к имени должника, т.к. имя кредитора тоже начинается с @
         // (нужны одинаковые форматы для имен должника и кредитора, чтобы потом можно было матчить и вычитать долги)
