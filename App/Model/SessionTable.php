@@ -31,7 +31,7 @@ class SessionTable extends AbstractTable
 
     public function closeSession(int $sessionId, string $chatId)
     {
-        $request = 'UPDATE ' . self::SESSION_TABLE . 'SET is_active = false'
+        $request = 'UPDATE ' . self::SESSION_TABLE . 'SET is_active = FALSE'
             . ' WHERE id = ? AND chat_id = ?';
 
         $statement = $this->pdo->prepare($request);
