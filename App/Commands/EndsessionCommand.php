@@ -2,6 +2,7 @@
 
 namespace Longman\TelegramBot\Commands\UserCommands;
 
+use App\Model\Calculator;
 use App\Model\SessionTable;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Entities\ServerResponse;
@@ -29,6 +30,7 @@ class EndsessionCommand extends UserCommand
 
         try {
             $reply = 'Закрыли сессию ' . $sessionId . '. Начать новую можно с помощью /start';
+            $text = (new Calculator())->calculateDebts($sessionId);
             $sessionTable->closeSession($sessionId, $chat_id);
         } catch (\Exception $e) {
             $reply = 'Что-то пошло не так: ' . $e->getMessage();
@@ -37,7 +39,8 @@ class EndsessionCommand extends UserCommand
 
         $data = [                                  // Set up the new message data
             'chat_id' => $chat_id,                 // Set Chat ID to send the message to
-            'text'    => $reply];
+            'text'    => $reply . PHP_EOL . $text
+        ];
 
         return Request::sendMessage($data);        // Send message!
     }

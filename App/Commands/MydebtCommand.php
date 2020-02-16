@@ -12,7 +12,7 @@ class MydebtCommand extends UserCommand
     protected $name = 'mydebt';                                 // Your command's name
     protected $description = 'get all debts for asking user'; // Your command description
     protected $usage = '/mydebt';                               // Usage of your command
-    protected $version = '1.0.0';                             // Version of your command
+    protected $version = '1.1.0';                             // Version of your command
 
     public function execute()
     {
@@ -24,22 +24,26 @@ class MydebtCommand extends UserCommand
         // (нужны одинаковые форматы для имен должника и кредитора, чтобы потом можно было матчить и вычитать долги)
         $user = "@{$message->getFrom()->getUsername()}";
 
-        $debtText = "Эй, {$user}! \n";
+        $reply = "Эй, {$user}! \n";
         try {
             $sessionId = (new SessionTable())->getLastActiveSessionByChatId($chatId);
-        } catch (\Throwable $e) {
-            $sessionId = 1; // TODO как надо обработать ошибку?
-        }        $debtsData = (new DebtTable())->getActiveDebtsForUser($user, $sessionId);
+            $debtsData = (new DebtTable())->getActiveDebtsForUser($user, $sessionId);
+        } catch (\Exception $e) {
+            $reply = $e->getMessage();
+        }
 
-        foreach ($debtsData as $debt) {
-            $debtText .= "Ты должен {$debt['user_creditor']} {$debt['amount']} за \"{$debt['description']}\".\n";
+        if (!empty($debtsData)) {
+            foreach ($debtsData as $debt) {
+                $reply .= "Ты должен {$debt['user_creditor']} {$debt['amount']} за \"{$debt['description']}\".\n";
+            }
+        } else {
+            $reply .= 'Пока долгов за тобой нет';
         }
 
         $data = [                                  // Set up the new message data
             'chat_id' => $chatId,                  // Set Chat ID to send the message to
-            'text'    => $debtText                 // Set message to send
+            'text'    => $reply                 // Set message to send
         ];
-
 
         return Request::sendMessage($data);        // Send message!
     }
