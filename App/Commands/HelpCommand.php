@@ -19,12 +19,12 @@ use Longman\TelegramBot\Request;
 /**
  * Start command
  */
-class StartCommand extends UserCommand
+class HelpCommand extends UserCommand
 {
-    protected $name = 'start';
+    protected $name = 'help';
     protected $description = 'Start command';
-    protected $usage = '/start';
-    protected $version = '1.2.0';
+    protected $usage = '/help';
+    protected $version = '1.0.0';
 
     public function execute()
     {
@@ -37,11 +37,10 @@ class StartCommand extends UserCommand
         $data = [                                  // Set up the new message data
             'chat_id' => $chat_id,                 // Set Chat ID to send the message to
             'text'    => 'Так, падажжи... Значит че бот умеет:' . PHP_EOL
-                . '/debt - регистрация долгов, /mydebt и /calculate для подсчетов' . PHP_EOL
-                . '/endsession чтобы закрыть текущую сессию подсчетов' . PHP_EOL
-                . '/help для подробных описаний команд' . PHP_EOL
-                . 'Текущая сессия в базе: ' . $sessionId  . PHP_EOL
-                .  'вот и все что тебе нужно' , // Set message to send
+                . '/debt @username сумма_без_копеек описание ### добавит в базу ваш долг юзернейму' . PHP_EOL
+                . '/endsession чтобы закрыть текущую сессию подсчетов, перед этим неплохо бы сделать подсчеты' . PHP_EOL
+                . '/mydebt ваш список долгов' . PHP_EOL
+                . '/calculate список долгов, всех кто поучаствовал в текущей сессии' . PHP_EOL
         ];
 
         return Request::sendMessage($data);        // Send message!

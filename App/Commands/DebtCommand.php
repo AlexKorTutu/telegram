@@ -26,19 +26,17 @@ class DebtCommand extends UserCommand
 
 
         if (!$this->validateMessage($message)) {
-            $reply = "Команда должна быть формата /debt @user СУММА описание";
+            $reply = "Команда должна быть формата /debt @user сумма_без_копеек описание";
         } else {
             $this->prepareData($message);
 
+            $sessionId = (new SessionTable())->getLastActiveSessionByChatId($chat_id);
+            $reply = "{$this->user}! Задолжал {$this->user2} {$this->sum} рублей, описание долга {$this->debtDescription}";
             try {
-                $sessionId = (new SessionTable())->getLastActiveSessionByChatId($chat_id);
-            } catch (\Throwable $e) {
-                $sessionId = 1; // TODO как надо обработать ошибку?
+                (new DebtTable())->addDebt($this->user, $this->user2, $this->sum, $sessionId, $this->debtDescription);
+            } catch (\Exception $e) {
+                $reply = 'Что-то пошло не так: ' . $e->getMessage();
             }
-            $reply = "{$this->user}! Задолжал {$this->user2} {$this->sum} рублей, за {$this->debtDescription}";
-
-            // TODO получать/создавать payment и передавать payment_id вместо сессии
-            (new DebtTable())->addDebt($this->user, $this->user2, $this->sum, $sessionId, $this->debtDescription);
         }
 
         $data = [                                  // Set up the new message data
@@ -69,11 +67,12 @@ class DebtCommand extends UserCommand
         // (нужны одинаковые форматы для имен должника и кредитора, чтобы потом можно было матчить и вычитать долги)
         $this->user = "@{$message->getFrom()->getUsername()}";
         $this->user2 = $user2;
-        //TODO:добавить проверку, что юзер есть в чате
+        //TODO:добавить проверку, что юзер есть в чате. UPD: кажется такую проверку нельзя сделать
 
-        $this->debtDescription = substr($text, $offset + $length);
+
         preg_match_all('/\s\d+\s/ ', $text, $matches);
         $this->sum = $sum = $matches[0][0];
+        $this->debtDescription = trim(substr(stristr($text, $sum), strlen($sum)));
     }
 
     /**

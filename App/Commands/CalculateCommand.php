@@ -8,7 +8,7 @@ use App\Model\SessionTable;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Request;
 
-class CalculateCommand  extends UserCommand
+class CalculateCommand extends UserCommand
 {
     protected $name = 'calculate';                                 // Your command's name
     protected $description = 'calculate all debts for session'; // Your command description
@@ -21,17 +21,13 @@ class CalculateCommand  extends UserCommand
 
         $chatId = $message->getChat()->getId();   // Get the current Chat ID
 
-        try {
-            $sessionId = (new SessionTable())->getLastActiveSessionByChatId($chatId);
-        } catch (\Throwable $e) {
-            $sessionId = 1; // TODO как надо обработать ошибку?
-        }
+        $sessionId = (new SessionTable())->getLastActiveSessionByChatId($chatId);
 
         $text = $this->prepareDebtsText($sessionId);
 
         $data = [                                  // Set up the new message data
             'chat_id' => $chatId,                  // Set Chat ID to send the message to
-            'text'    => $text                 // Set message to send
+            'text' => $text                 // Set message to send
         ];
 
 
@@ -81,13 +77,8 @@ class CalculateCommand  extends UserCommand
             }
         }
         if (empty($debtText)) {
-            $debtText =  "Поздравляю! У вас нет долгов в текущей сессии";
+            $debtText = "Поздравляю! У вас нет долгов в текущей сессии";
         }
         return $hiText . $debtText;
-    }
-
-    private function getDebtTable()
-    {
-        return new DebtTable();
     }
 }
