@@ -11,7 +11,7 @@ class MyDebtCommand extends UserCommand
 {
     protected $name = 'my_debt';                                 // Your command's name
     protected $description = 'get all debts for asking user'; // Your command description
-    protected $usage = '/my_debt';                               // Usage of your command
+    protected $usage = '/mydebt';                               // Usage of your command
     protected $version = '1.0.0';                             // Version of your command
 
     public function execute()

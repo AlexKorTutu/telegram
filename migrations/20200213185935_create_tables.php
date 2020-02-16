@@ -20,15 +20,15 @@ class CreateTables extends AbstractMigration
             ->addIndex(['session_id']);
         $paymentTable->save();
 
-        $sessionTable = $this->table('debt');
-        $sessionTable->addColumn('payment_id', 'integer')
+        $debtTable = $this->table('debt');
+        $debtTable->addColumn('payment_id', 'integer')
             ->addColumn('description', 'string', ['default' => ''])
             ->addColumn('amount', 'decimal', ['scale' => 2, 'null' => false])
             ->addColumn('user_debtor', 'string', ['null' => false])
             ->addColumn('user_creditor', 'string', ['null' => false])
             ->addColumn('is_open', 'boolean', ['default' => 1])
             ->addIndex(['payment_id']);
-        $sessionTable->save();
+        $debtTable->save();
     }
 
     public function down()
