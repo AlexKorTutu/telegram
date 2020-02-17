@@ -32,7 +32,7 @@ class DebtCommand extends UserCommand
                 $this->prepareData($message);
 
                 $sessionId = (new SessionTable())->getLastActiveSessionByChatId($chat_id);
-                $reply = "{$this->user}! Задолжал {$this->user2} {$this->sum} рублей, описание долга {$this->debtDescription}";
+                $reply = "{$this->user}! Задолжал {$this->user2} {$this->sum} рублей, описание долга: {$this->debtDescription}";
 
                 (new DebtTable())->addDebt($this->user, $this->user2, $this->sum, $sessionId, $this->debtDescription);
             } catch (\Exception $e) {
